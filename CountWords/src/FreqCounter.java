@@ -126,7 +126,8 @@ public class FreqCounter {
 			// A line is only stored the line after finding it the first time
 			if (lineTable.containsKey(regexMatch) && !alreadyFound)
 			{
-				
+				lineTable.get(regexMatch).add("Line " + lineCount + ": " + line);
+				alreadyFound = true;
 			}
 			
 			/*PriorityWord newKeyword = new PriorityWord(word, 3);
@@ -154,6 +155,23 @@ public class FreqCounter {
 		
 		// Prints word count results for all specified keywords ordered by Priority Level
 		
+		for (int k = 0; k < regexTracker.size(); k++)
+		{
+
+			String thisExpression = regexTracker.get(k);
+			if (thisExpression != null)
+			{
+				// Tests whether words are printing in correct Priority order
+				//System.out.println(thisWord + ":\t" + wordValue + "\t" + thisPriority);
+				
+				//TODO: Need to re-implement this based on the below code. I need to create a another Hashmap that stores a Regular Expression with its corresponding displayable word
+				//TODO: I should also revisit regexTracker. I might not need this data structure if I can already store display order 
+				//and search for existing expressions using wordTable or lineTable
+				
+			}
+		}
+		
+		/*
 		for (int k = 0; k < pWordList.size(); k++)
 		{
 			PriorityWord pWord = pWordList.get(k);
@@ -184,6 +202,6 @@ public class FreqCounter {
 					System.out.println();
 				}
 			}
-		}
+		}*/
 	}
 }
