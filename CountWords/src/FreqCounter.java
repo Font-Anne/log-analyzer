@@ -27,7 +27,7 @@ public class FreqCounter {
 		wordTable.put(".*warning.*", 0);
 		wordTable.put(".*critical.*", 0);
 		
-		// Specify the Priority Level 2 Keywords (Based on user-input)
+		// Specify keywords based on user-input)
 		for (String word : inKeywords)
 		{
 			// TODO: Need to change implementation to account for inputs that may contain "*" or "." character.
@@ -113,8 +113,7 @@ public class FreqCounter {
 		// Formatting can be improved but right now it's working as intended. Might want to consider case for larger data set.
 		System.out.println("--------- Word Frequencies ---------");
 		
-		// Prints word count results for all specified keywords ordered by Priority Level
-		
+		// Printing by hashmap set causes it to not print in the order the words were added
 		for (Map.Entry<String, Integer> map : wordTable.entrySet())
 		{
 			String thisExpression = map.getKey();
