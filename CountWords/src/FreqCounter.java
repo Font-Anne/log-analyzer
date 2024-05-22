@@ -5,16 +5,10 @@ import java.util.regex.Matcher;
 public class FreqCounter {
 	//private String paragraph;
 	private List<String> paragraph;
-	
-	//private HashMap<String, Integer> wordTable;
 	private HashMap<String, Integer> wordTable;
 	
-	// Lines are only tracked for Priority 1 and Priority 2 (user specified) words
-	//private HashMap<String, ArrayList<String>> lineTable;
+	// Lines are only tracked for hard-coded and user-specified words
 	private HashMap<String, ArrayList<String>> lineTable;
-	
-	private List<String> regexTracker;
-	//private List<PriorityWord> pWordList;
 	
 	public FreqCounter(List<String> fileInput, String[] inKeywords)
 	{
@@ -23,46 +17,28 @@ public class FreqCounter {
 		wordTable = new HashMap<String, Integer>();
 		lineTable = new HashMap<String, ArrayList<String>>();
 		
-		// Specify the Priority Level 1 Keywords (Most Important)
-		regexTracker = new ArrayList<String>();
-		//pWordList = new ArrayList<PriorityWord>();
-		
-		// Define pre-determined keywords to prioritize when searching the text here. Second parameter is the priority level (higher = more important)
-		/*
-		pWordList.add(new PriorityWord("error", 1));
-		pWordList.add(new PriorityWord("errors", 1));
-		pWordList.add(new PriorityWord("failure", 1));
-		pWordList.add(new PriorityWord("warning", 1));
-		pWordList.add(new PriorityWord("critical", 1));*/
-
-		regexTracker.add(".*error.*");
-		regexTracker.add(".*failure.*");
-		regexTracker.add(".*warning.*");
-		regexTracker.add(".*critical.*");
-		
-		
 		lineTable.put(".*error.*", new ArrayList<String>());
 		lineTable.put(".*failure.*", new ArrayList<String>());
 		lineTable.put(".*warning.*", new ArrayList<String>());
 		lineTable.put(".*critical.*", new ArrayList<String>());
 		
+		wordTable.put(".*error.*", 0);
+		wordTable.put(".*failure.*", 0);
+		wordTable.put(".*warning.*", 0);
+		wordTable.put(".*critical.*", 0);
+		
 		// Specify the Priority Level 2 Keywords (Based on user-input)
 		for (String word : inKeywords)
 		{
+			// TODO: Need to change implementation to account for inputs that may contain "*" or "." character.
+			// Escape characters should be added for anything that could be read as regex formatting
 			String keywordToRegex = ".*" + word + ".*";
-			if (!regexTracker.contains(keywordToRegex))
+			
+			if (!wordTable.containsKey(keywordToRegex))
 			{
-				regexTracker.add(keywordToRegex);
+				wordTable.put(keywordToRegex, 0);
 				lineTable.put(keywordToRegex, new ArrayList<String>());
 			}
-
-			/*
-			PriorityWord p2Keyword = new PriorityWord(word, 2);
-			if (!pWordList.contains(p2Keyword))
-			{
-				pWordList.add(p2Keyword);
-				lineTable.put(word, new ArrayList<String>());
-			}*/
 		}
 		
 		getFreqList();
@@ -72,9 +48,9 @@ public class FreqCounter {
 	// If a match is found, it returns the regular expression the word matched with.
 	public String findExpression(String word)
 	{
-		for (int k = 0; k < regexTracker.size(); k++)
+		for (Map.Entry<String, Integer> map : wordTable.entrySet())
 		{
-			String regexInput = regexTracker.get(k);
+			String regexInput = map.getKey();
 			
 			Pattern thisPattern = Pattern.compile(regexInput, Pattern.CASE_INSENSITIVE);
 			Matcher m = thisPattern.matcher(word);
@@ -129,22 +105,6 @@ public class FreqCounter {
 				lineTable.get(regexMatch).add("Line " + lineCount + ": " + line);
 				alreadyFound = true;
 			}
-			
-			/*PriorityWord newKeyword = new PriorityWord(word, 3);
-			
-			if (pWordList.contains(newKeyword))
-			{
-				if (!wordTable.containsKey(word))
-					wordTable.put(word, 1);
-				else
-					wordTable.put(word, wordTable.get(word) + 1);
-			}
-			
-			if (lineTable.containsKey(word) && !alreadyFound)
-			{
-					lineTable.get(word).add("Line " + lineCount + ": " + line);
-					alreadyFound = true;
-			}*/
 		}
 	}
 	
@@ -155,40 +115,25 @@ public class FreqCounter {
 		
 		// Prints word count results for all specified keywords ordered by Priority Level
 		
-		for (int k = 0; k < regexTracker.size(); k++)
+		for (Map.Entry<String, Integer> map : wordTable.entrySet())
 		{
-
-			String thisExpression = regexTracker.get(k);
+			String thisExpression = map.getKey();
 			if (thisExpression != null)
 			{
-				// Tests whether words are printing in correct Priority order
-				//System.out.println(thisWord + ":\t" + wordValue + "\t" + thisPriority);
+				int start = thisExpression.indexOf("*");
+				int end = thisExpression.lastIndexOf(".");
 				
-				//TODO: Need to re-implement this based on the below code. I need to create a another Hashmap that stores a Regular Expression with its corresponding displayable word
-				//TODO: I should also revisit regexTracker. I might not need this data structure if I can already store display order 
-				//and search for existing expressions using wordTable or lineTable
+				// Even empty String case ".*.* and case with multiple symbols ".**..**..*"should work so I will not check for OOB error
+				// If this case is failing, then it should be looked at to see what input is causing problems.
+					
+				String regexToWord = thisExpression.substring(start + 1, end);
 				
-			}
-		}
-		
-		/*
-		for (int k = 0; k < pWordList.size(); k++)
-		{
-			PriorityWord pWord = pWordList.get(k);
-			String thisWord = pWord.getWord();
-			//int thisPriority = pWord.getPriorityLevel();
-			
-			Object wordValue = wordTable.get(thisWord);
-			if (wordValue != null)
-			{
-				// Tests whether words are printing in correct Priority order
-				//System.out.println(thisWord + ":\t" + wordValue + "\t" + thisPriority);
+				if (!regexToWord.isEmpty())
+					System.out.println(regexToWord + " | Frequency Count = " + map.getValue());
 				
-				System.out.println(thisWord + " | Frequency Count = " + wordValue);
-				
-				if (lineTable.containsKey(thisWord))
+				if (lineTable.containsKey(thisExpression))
 				{
-					ArrayList<String> lineList = lineTable.get(thisWord);
+					ArrayList<String> lineList = lineTable.get(thisExpression);
 					
 					//Changed so that it will stop printing error lines after the first 10
 					int i = 0;
@@ -202,6 +147,7 @@ public class FreqCounter {
 					System.out.println();
 				}
 			}
-		}*/
+			
+		}
 	}
 }
