@@ -14,30 +14,26 @@ public class FreqCounter {
 	{
 		// Passing an ArrayList is pass by value. paragraph contains the address to the original ArrayList so be very careful about doing anything but get() on this ArrayList
 		paragraph = fileInput;
-		wordTable = new HashMap<String, Integer>();
-		lineTable = new HashMap<String, ArrayList<String>>();
+		wordTable = new LinkedHashMap<String, Integer>();
+		lineTable = new LinkedHashMap<String, ArrayList<String>>();
 		
-		lineTable.put(".*error.*", new ArrayList<String>());
-		lineTable.put(".*failure.*", new ArrayList<String>());
-		lineTable.put(".*warning.*", new ArrayList<String>());
-		lineTable.put(".*critical.*", new ArrayList<String>());
+		lineTable.put("error", new ArrayList<String>());
+		lineTable.put("failure", new ArrayList<String>());
+		lineTable.put("warning", new ArrayList<String>());
+		lineTable.put("critical", new ArrayList<String>());
 		
-		wordTable.put(".*error.*", 0);
-		wordTable.put(".*failure.*", 0);
-		wordTable.put(".*warning.*", 0);
-		wordTable.put(".*critical.*", 0);
+		wordTable.put("error", 0);
+		wordTable.put("failure", 0);
+		wordTable.put("warning", 0);
+		wordTable.put("critical", 0);
 		
 		// Specify keywords based on user-input)
 		for (String word : inKeywords)
 		{
-			// TODO: Need to change implementation to account for inputs that may contain "*" or "." character.
-			// Escape characters should be added for anything that could be read as regex formatting
-			String keywordToRegex = ".*" + word + ".*";
-			
-			if (!wordTable.containsKey(keywordToRegex))
+			if (!wordTable.containsKey(word))
 			{
-				wordTable.put(keywordToRegex, 0);
-				lineTable.put(keywordToRegex, new ArrayList<String>());
+				wordTable.put(word, 0);
+				lineTable.put(word, new ArrayList<String>());
 			}
 		}
 		
@@ -50,13 +46,15 @@ public class FreqCounter {
 	{
 		for (Map.Entry<String, Integer> map : wordTable.entrySet())
 		{
-			String regexInput = map.getKey();
+			String mapKey = map.getKey();
+			// Added escape characters \\Q and \\E so there are no issues even if the user wants to specify special characters in their input
+			String regexInput = ".*\\Q" + mapKey + "\\E.*";
 			
 			Pattern thisPattern = Pattern.compile(regexInput, Pattern.CASE_INSENSITIVE);
 			Matcher m = thisPattern.matcher(word);
 			
 			if (m.matches())
-				return regexInput;
+				return mapKey;
 		}
 		
 		return "NO_MATCH_FOUND";
@@ -89,6 +87,7 @@ public class FreqCounter {
 		for (String word : wordsInLine)
 		{	
 			
+			//TODO: The issue is happening somewhere around here. If I give the code the input ".", it will add several words containing that character into wordTable
 			String regexMatch = findExpression (word);
 			
 			if (!regexMatch.equals("NO_MATCH_FOUND"))
@@ -116,23 +115,14 @@ public class FreqCounter {
 		// Printing by hashmap set causes it to not print in the order the words were added
 		for (Map.Entry<String, Integer> map : wordTable.entrySet())
 		{
-			String thisExpression = map.getKey();
-			if (thisExpression != null)
+			String thisWord = map.getKey();
+			if (thisWord != null && !thisWord.isEmpty())
 			{
-				int start = thisExpression.indexOf("*");
-				int end = thisExpression.lastIndexOf(".");
+				System.out.println(thisWord + " | Frequency Count = " + map.getValue());
 				
-				// Even empty String case ".*.* and case with multiple symbols ".**..**..*"should work so I will not check for OOB error
-				// If this case is failing, then it should be looked at to see what input is causing problems.
-					
-				String regexToWord = thisExpression.substring(start + 1, end);
-				
-				if (!regexToWord.isEmpty())
-					System.out.println(regexToWord + " | Frequency Count = " + map.getValue());
-				
-				if (lineTable.containsKey(thisExpression))
+				if (lineTable.containsKey(thisWord))
 				{
-					ArrayList<String> lineList = lineTable.get(thisExpression);
+					ArrayList<String> lineList = lineTable.get(thisWord);
 					
 					//Changed so that it will stop printing error lines after the first 10
 					int i = 0;

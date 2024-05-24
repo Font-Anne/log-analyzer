@@ -9,7 +9,7 @@ public class Driver {
 	public static void main(String[] args) throws Exception {
 		
 		/*-------------------READING FILE-------------------*/
-		 File file = new File("C:\\Users\\5J3877897\\Documents\\VeeamBackupManager.log");
+		 File file = new File("C:\\Users\\5J3877897\\Documents\\BDM Files\\zOS example log.txt");
 				 //"C:\\Users\\5J3877897\\Documents\\BDM Files\\java_multiline_test.txt");
 		 
 		 // Note:  Double back quote is to avoid incorrect compiler interpretation
