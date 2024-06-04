@@ -36,7 +36,7 @@ public class Driver {
 		Scanner scan = new Scanner(System.in);
 		
 		// Asks the user for any keywords they want to prioritize
-		System.out.println("Specify any keywords you would like to look for, separate by spaces");
+		System.out.println("Specify any keywords you would like to look for. Separate by spaces");
 		System.out.println("Example: backups disconnect March stuck");
 		
 		String keywords = scan.nextLine().trim();
