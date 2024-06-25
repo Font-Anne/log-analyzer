@@ -8,7 +8,7 @@ import javax.swing.JButton;
 public class MyFrame extends JFrame {
 
 	JButton btn;
-	String file_path;
+	File file_path;
 	
 	MyFrame()
 	{
@@ -22,7 +22,7 @@ public class MyFrame extends JFrame {
 		this.add(btn);
 		
 		// Set to empty String to avoid any null object errors
-		file_path = "";
+		file_path = null;
 		
 		this.pack();
 		this.setVisible(true);
@@ -32,5 +32,15 @@ public class MyFrame extends JFrame {
 	public JButton getButton()
 	{
 		return btn;
+	}
+	
+	public void setFilePath(File inFile)
+	{
+		file_path = inFile;
+	}
+	
+	public File getFilePath()
+	{
+		return file_path;
 	}
 }
