@@ -53,55 +53,58 @@ public class Driver {
 					// Hide GUI when user has selected a file
 					frame.setVisible(false);
 					
-					/*-------------------READING FILE-------------------*/
-
-					 File file = frame.getFilePath();
-					 
-					 //File file = new File("C:\\Users\\5J3877897\\Documents\\BDM Files\\zOS example log.txt");
-					 
-					 Scanner scanFile;
-					 List<String> fileInput = new ArrayList<String>();
-					try {
-						 scanFile = new Scanner(file);
-							
-						 // Condition holds true while there is character in a string
-						 while (scanFile.hasNextLine())
-						 {
-							 // Turns all of the input into one big string because FreqCounter reads in String[] right now
-							 //fileInput = fileInput + scanFile.nextLine().trim() + "\n";
-							 String line = scanFile.nextLine().trim();
-							 fileInput.add(line);
-						 }
-						
-						 scanFile.close();
-						 
-					} 
-					catch (FileNotFoundException e) {
-						e.printStackTrace();
-					}
-					
-					/*-------------------SCANNER USER INPUT-------------------*/
-					
-					// Allows the program to scan for user input
-					Scanner scan = new Scanner(System.in);
-					
-					// Asks the user for any keywords they want to prioritize
-					System.out.println("Specify any keywords you would like to look for. Separate by spaces");
-					System.out.println("Example: backups disconnect March stuck");
-					
-					String keywords = scan.nextLine().trim();
-					String[] keysArr = keywords.split("\\s+");
-					
-					scan.close();
-					
-					FreqCounter freq = new FreqCounter(fileInput, keysArr);
-					freq.printWordFrequency();
-				}
+					analyzeLogs(frame.getFilePath());
 			
 				// Automatically closes the window after program is run
-				frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+				//frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+				}
 			}
 		});
 		
+	}
+	
+	public static void analyzeLogs(File thisFile)
+	{
+		/*-------------------READING FILE-------------------*/
+		 
+		 //File file = new File("C:\\Users\\5J3877897\\Documents\\BDM Files\\zOS example log.txt");
+		 
+		 Scanner scanFile;
+		 List<String> fileInput = new ArrayList<String>();
+		try {
+			 scanFile = new Scanner(thisFile);
+				
+			 // Condition holds true while there is character in a string
+			 while (scanFile.hasNextLine())
+			 {
+				 // Turns all of the input into one big string because FreqCounter reads in String[] right now
+				 //fileInput = fileInput + scanFile.nextLine().trim() + "\n";
+				 String line = scanFile.nextLine().trim();
+				 fileInput.add(line);
+			 }
+			
+			 scanFile.close();
+			 
+		} 
+		catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		
+		/*-------------------SCANNER USER INPUT-------------------*/
+		
+		// Allows the program to scan for user input
+		Scanner scan = new Scanner(System.in);
+		
+		// Asks the user for any keywords they want to prioritize
+		System.out.println("Specify any keywords you would like to look for. Separate by spaces");
+		System.out.println("Example: backups disconnect March stuck");
+		
+		String keywords = scan.nextLine().trim();
+		String[] keysArr = keywords.split("\\s+");
+		
+		scan.close();
+		
+		FreqCounter freq = new FreqCounter(fileInput, keysArr);
+		freq.printWordFrequency();
 	}
 }
